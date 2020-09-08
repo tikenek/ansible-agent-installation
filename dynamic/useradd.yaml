@@ -1,0 +1,32 @@
+---
+- name: Adding users
+  hosts: all
+  user: centos
+  connection: ssh
+  become: yes
+  become_method: sudo
+  tasks:
+  
+  - name: add the user 
+    user:
+      name: lisa
+      state: present
+   
+  - name: SSH key
+    user:
+      authorized_key: user=lisa
+      key="{{ lookup('file', '/home/lisa/.ssh/id_rsa.pub') }}"
+      state: present
+    ignore_errors: yes
+    
+  - debug:
+      msg: 'Logging in as {{ lisa }}'
+    tags: user lisa
+
+  - name: Remove the user 
+    user:
+      name: lisa
+      state: absent
+      remove: yes
+
+
